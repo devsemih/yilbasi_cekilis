@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import './App.css';
+import emailjs from '@emailjs/browser';
 
 export class App extends Component {
   constructor(props) {
@@ -20,17 +21,27 @@ export class App extends Component {
   deleteParticipant = ({ index }) => {
     const { participants } = this.state;
     this.setState({
-      participants: participants.filter((participant, i) => i !== index),
+      participants: participants.filter((p, i) => i !== index),
     });
   };
 
   beginLottery = () => {
     const { participants } = this.state;
-    console.log(participants);
+    emailjs.init('oDoqTFrO5hBn68CwS');
 
-    const randomIndex = Math.floor(Math.random() * participants.length);
-    const winner = participants[randomIndex];
-    alert(`The winner is ${winner.email}`);
+    participants.forEach((p, index) => {
+      const { email } = p;
+      const otherParticipants = participants.filter((p, i) => i !== index);
+      const randomIndex = Math.floor(Math.random() * otherParticipants.length);
+      const randomParticipant = otherParticipants[randomIndex];
+      const { email: randomEmail } = randomParticipant;
+
+      emailjs.send("service_ew80b8f", "template_mhdts6r", {
+        name: email,
+        from_name: randomEmail,
+        to: email,
+      });
+    });
   };
 
   render() {
