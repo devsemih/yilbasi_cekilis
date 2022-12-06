@@ -6,7 +6,8 @@ export class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      participants: [{ email: '' }]
+      participants: [{ email: '' }],
+      result: [],
     };
   }
 
@@ -26,7 +27,7 @@ export class App extends Component {
   };
 
   beginLottery = () => {
-    const { participants } = this.state;
+    const { participants, result } = this.state;
     emailjs.init('oDoqTFrO5hBn68CwS');
 
     participants.forEach((p, index) => {
@@ -41,15 +42,18 @@ export class App extends Component {
         from_name: randomEmail,
         to: email,
       });
+
+      result.push({ email, randomEmail })
     });
+
+    this.setState({ result })
   };
 
   render() {
     const { participants } = this.state;
     return (
       <main className="container p-8 xl:p-20">
-        <h1 className='text-3xl font-semibold'>UNIPA 2023 Yılbaşı Çekilişi</h1>
-        <p className='mt-2 mb-8'>Kazananlar 2023 yılında açıklanacaktır.</p>
+        <h1 className='text-3xl font-semibold mb-8'>UNIPA 2023 Yılbaşı Çekilişi</h1>
 
         {
           participants.map((participant, index) => (
@@ -95,6 +99,21 @@ export class App extends Component {
           className='mt-8 h-10 px-4 bg-indigo-900 text-white rounded-md transition-all duration-300 hover:rounded-3xl'>
           Çekilişi Başlat
         </button>
+
+        {
+          this.state.result.length > 0 && (
+            <div className='mt-8'>
+              <h2 className='text-2xl font-semibold'>Çekiliş Sonuçları</h2>
+              <ul className='mt-4'>
+                {
+                  this.state.result.map((r, index) => (
+                    <li className='mt-2'>{`${index + 1}. ${r.email} -> ${r.randomEmail}'ye hediye alacak`}</li>
+                  ))
+                }
+              </ul>
+            </div>
+          )
+        }
       </main>
     );
   }
